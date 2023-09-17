@@ -28,7 +28,7 @@ class FDataBase:
         except sqlite3.Error as e:
             print("Ошибка добавления статьи в БД "+str(e))
             return False
-        return False
+        return True
 
     def getPost(self, postId):
         try:

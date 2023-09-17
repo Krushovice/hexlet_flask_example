@@ -7,7 +7,6 @@ from flask import (Flask, flash, render_template, request,
                    make_response, session, abort, g)
 
 
-
 # конфигурация
 SECRET_KEY = "3&t72u%*23a$59#1f%8hs*$%hre#@%"
 DEBUG = True
@@ -79,19 +78,23 @@ def denied_access(error):
 def add_post():
     db = get_db()
     dbase = FDataBase(db)
+    name = request.form['name']
+    post = request.form['post']
 
     if request.method == "POST":
-        if len(request.form['name']) > 4 and len(request.form['post']) > 10:
-            res = dbase.addPost(request.form['name'], request.form['post'])
+        if len(name) > 4 and len(post) > 10:
+            res = dbase.addPost(name, post)
             if not res:
                 flash('Ошибка добавления статьи', category='error')
             else:
                 flash('Статья добавлена успешно', category='success')
         else:
-            flash('Ошибка добавления статьи', category='error')
+            flash('Ошибка добавления статьи. Увеличьте количество символов',
+                  category='error')
 
-    return render_template('posts/add_post.html', menu=dbase.getMenu(), title="Добавление статьи")
-
+    return render_template('posts/add_post.html',
+                           menu=dbase.getMenu(),
+                           title="Добавление статьи")
 
 @app.route("/post/<id_post>")
 def show_post(id_post):
