@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+<form action="/users" method="get">
+    <input type="search" name="term" value="{{ search }}" />
+    <input type="submit" value="Search" />
+</form>
+<ul>
+    {% for _, user in users.items() %}
+    <div>
+      <li>{{ user["nickname"] }}: {{ user["email"] }}</li>
+    </div>
+  {% endfor %}
+</ul>
+<p><a href='url_for("index")'>Вернуться на главную страницу</a></p>
