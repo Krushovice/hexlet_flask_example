@@ -78,10 +78,10 @@ def denied_access(error):
 def add_post():
     db = get_db()
     dbase = FDataBase(db)
-    name = request.form['name']
-    post = request.form['post']
 
     if request.method == "POST":
+        name = request.form['name']
+        post = request.form['post']
         if len(name) > 4 and len(post) > 10:
             res = dbase.addPost(name, post)
             if not res:
