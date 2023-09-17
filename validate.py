@@ -5,3 +5,4 @@ def validate(user):
     if not user['email']:
         errors['email'] = "Can't be blanc"
     return errors
+#test
