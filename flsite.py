@@ -5,7 +5,7 @@ from jinja2 import Environment, FileSystemLoader
 from flask import (Flask, flash, render_template, request,
                    redirect, url_for, get_flashed_messages,
                    make_response, session, abort, g)
-
+from validate import validate_post
 
 # конфигурация
 SECRET_KEY = "3&t72u%*23a$59#1f%8hs*$%hre#@%"
@@ -82,25 +82,27 @@ def add_post():
     if request.method == "POST":
         name = request.form['name']
         post = request.form['post']
-        if len(name) > 4 and len(post) > 10:
-            res = dbase.addPost(name, post)
+        url = request.form['url']
+        if validate_post(name, post):
+            res = dbase.addPost(name, post, url)
             if not res:
                 flash('Ошибка добавления статьи', category='error')
             else:
                 flash('Статья добавлена успешно', category='success')
         else:
-            flash('Ошибка добавления статьи. Увеличьте количество символов',
+            flash('Ошибка.Увеличьте количество символов',
                   category='error')
 
     return render_template('posts/add_post.html',
                            menu=dbase.getMenu(),
                            title="Добавление статьи")
 
-@app.route("/post/<id_post>")
-def show_post(id_post):
+
+@app.route("/post/<alias>")
+def show_post(alias):
     db = get_db()
     dbase = FDataBase(db)
-    title, post = dbase.getPost(id_post)
+    title, post = dbase.getPost(alias)
     if not title:
         abort(404)
 
