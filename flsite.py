@@ -42,11 +42,17 @@ def get_db():
 
 @app.route('/')
 def index():
-    db = get_db()
-    dbase = FDataBase(db)
+    dbase = g.dbase
     return render_template('index.html',
                            menu=dbase.getMenu(),
                            posts=dbase.getPostsAnnounce())
+
+
+@app.before_request
+def before_request():
+    db = get_db()
+    g.db = db
+    g.dbase = FDataBase(db)
 
 
 @app.teardown_appcontext
@@ -76,8 +82,7 @@ def denied_access(error):
 
 @app.route("/add_post", methods=["POST", "GET"])
 def add_post():
-    db = get_db()
-    dbase = FDataBase(db)
+    dbase = g.dbase
 
     if request.method == "POST":
         name = request.form['name']
@@ -100,8 +105,7 @@ def add_post():
 
 @app.route("/post/<alias>")
 def show_post(alias):
-    db = get_db()
-    dbase = FDataBase(db)
+    dbase = g.dbase
     title, post = dbase.getPost(alias)
     if not title:
         abort(404)
