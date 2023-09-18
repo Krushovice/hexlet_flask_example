@@ -1,0 +1,8 @@
+0000000000000000000000000000000000000000 15bfacbefbb22d1e97a749e25de09946c9e7503c Krushovice <krushovice@LinuxHome.myguest.virtualbox.org> 1694939159 +1000	commit (initial): first commit
+15bfacbefbb22d1e97a749e25de09946c9e7503c 15bfacbefbb22d1e97a749e25de09946c9e7503c Krushovice <krushovice@LinuxHome.myguest.virtualbox.org> 1694939352 +1000	Branch: renamed refs/heads/master to refs/heads/main
+15bfacbefbb22d1e97a749e25de09946c9e7503c 15bfacbefbb22d1e97a749e25de09946c9e7503c Krushovice <krushovice@LinuxHome.myguest.virtualbox.org> 1694939860 +1000	Branch: renamed refs/heads/main to refs/heads/main
+15bfacbefbb22d1e97a749e25de09946c9e7503c e50b2cce92ab211e52c7615d6bee945b3c54426e Krushovice <kickstar69@yandex.ru> 1694941203 +1000	commit: test commit
+e50b2cce92ab211e52c7615d6bee945b3c54426e 720615c1a58efb546ce908cbd9f65b96928577a9 Krushovice <kickstar69@yandex.ru> 1694941291 +1000	commit: change ignore files
+720615c1a58efb546ce908cbd9f65b96928577a9 0b1495fe52c7690c72ef4bcff61a70c566325eb6 Krushovice <kickstar69@yandex.ru> 1694951581 +1000	commit: fix flash problems
+0b1495fe52c7690c72ef4bcff61a70c566325eb6 4e802ea18efe3e07e5a8891b8db1b370aeedb281 Krushovice <kickstar69@yandex.ru> 1694951868 +1000	commit: Добавил локальные переменные "name", "post" для лучшей читаемости кода
+4e802ea18efe3e07e5a8891b8db1b370aeedb281 105985d3e2a378dbeeab2c9daf3822585b650103 Krushovice <kickstar69@yandex.ru> 1695021492 +1000	commit: Работа с изображениями на html странице

@@ -5,7 +5,8 @@ from jinja2 import Environment, FileSystemLoader
 from flask import (Flask, flash, render_template, request,
                    redirect, url_for, get_flashed_messages,
                    make_response, session, abort, g)
-from validate import validate_post
+from utility.validate import validate_post, validate_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # конфигурация
 SECRET_KEY = "3&t72u%*23a$59#1f%8hs*$%hre#@%"
@@ -128,21 +129,50 @@ def show_post(alias):
 #                            menu=dbase.getMenu())
 
 
-# @app.route('/profile/<username>')
-# def profile(username):
-#     if 'userLogged' not in session or session['userLogged'] != username:
-#         abort(401)
-#     return f'Профиль пользователя: {username}'
+@app.route('/profile/<username>')
+def profile(username):
+    dbase = g.dbase
+    if 'userLogged' not in session or session['userLogged'] != username:
+        abort(401)
+    return render_template('users/profile.html',
+                           menu=dbase.getMenu())
 
 
-# @app.route('/login', methods=['GET', 'POST'])
-# def log_in():
-#     if "userLogged" in session:
-#         return redirect(url_for('profile', username=session['userLogged']))
-#     elif request.method == 'POST' and request.form['username'] == 'krushovice' and request.form['psw'] == '256':
-#         session['userLogged'] = request.form['username']
-#         return redirect(url_for('profile', username=session['userLogged']))
-#     return render_template('login.html', title='Авторизация')
+@app.route('/login', methods=['GET', 'POST'])
+def log_in():
+    dbase = g.dbase
+    if "userLogged" in session:
+        return redirect(url_for('profile',
+                                username=session['userLogged'],
+                                menu=dbase.getMenu()))
+    elif request.method == 'POST' and request.form['username'] == 'krushovice' and request.form['psw'] == '256':
+        session['userLogged'] = request.form['username']
+        return redirect(url_for('profile',
+                                username=session['userLogged'],
+                                menu=dbase.getMenu()))
+    return render_template('login.html',
+                           title='Авторизация',
+                           menu=dbase.getMenu())
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    dbase = g.dbase
+    if request.method == 'POST':
+        user = request.form.to_dict()
+        if validate_user(user):
+            hash = generate_password_hash(user['psw'])
+            res = dbase.addUser(user['name'], user['email'], hash)
+            if res:
+                flash('Вы успешно зарегистрированы', 'success')
+                return redirect(url_for('log_in'))
+            else:
+                flash('Ошибка добавления в БД', 'error')
+        else:
+            flash('Неверно заполнены поля', 'error')
+    return render_template('register.html',
+                           title='Регистрация',
+                           menu=dbase.getMenu())
 
 
 if __name__ == '__main__':
