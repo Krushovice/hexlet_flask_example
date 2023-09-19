@@ -145,7 +145,7 @@ def log_in():
         return redirect(url_for('profile',
                                 username=session['userLogged'],
                                 menu=dbase.getMenu()))
-    elif request.method == 'POST' and request.form['username'] == 'krushovice' and request.form['psw'] == '256':
+    elif request.method == 'POST' and request.form['username'] == 'admin' and request.form['psw'] == '2566':
         session['userLogged'] = request.form['username']
         return redirect(url_for('profile',
                                 username=session['userLogged'],
