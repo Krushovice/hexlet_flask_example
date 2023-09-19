@@ -8,7 +8,8 @@ from flask import (Flask, flash, render_template, request,
                    make_response, session, abort, g)
 from utility.validate import validate_post, validate_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, login_user, login_required
+from flask_login import (LoginManager, login_user,
+                         login_required, current_user, logout_user)
 
 
 # конфигурация
@@ -22,6 +23,11 @@ app.config.update(dict(DATABASE=os.path.join(app.root_path,
                                              'database/flstite.db')))
 
 login_manager = LoginManager(app)
+login_manager.login_view = 'log_in'
+login_manager.login_message = """Для просмотра данной страницы,
+необходимо авторизоваться"""
+
+login_manager.login_message_category = "success"
 
 
 @login_manager.user_loader
@@ -141,32 +147,42 @@ def show_post(alias):
 #                            menu=dbase.getMenu())
 
 
-# @app.route('/profile/<username>')
-# def profile(username):
+@app.route('/profile')
+@login_required
+def profile():
 
-#     if 'userLogged' not in session or session['userLogged'] != username:
-#         abort(401)
-
-#     return render_template('users/profile.html',
-#                            menu=dbase.getMenu())
+    return render_template('users/profile.html',
+                           menu=dbase.getMenu())
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def log_in():
+    if current_user.is_authenticated:
+        return redirect(url_for('profile'))
+
     if request.method == 'POST':
         user_data = request.form.to_dict()
         user = dbase.getUserByEmail(user_data['email'])
 
         if user and check_password_hash(user['psw'], user_data['psw']):
             user_log = UserLogin().create(user)
-            login_user(user_log)
-            return redirect(url_for('index'))
+            rm = True if request.form.get('remainme') else False
+            login_user(user_log, remember=rm)
+            return redirect(url_for('profile'))
 
         flash('Неверная пара логин/пароль', 'error')
 
     return render_template('login.html',
                            title='Авторизация',
                            menu=dbase.getMenu())
+
+
+@app.route('/logout')
+@login_required
+def log_out():
+    logout_user()
+    flash("Вы вышли из аккаунта", "success")
+    return redirect(url_for('log_in'))
 
 
 @app.route('/register', methods=['GET', 'POST'])

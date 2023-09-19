@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
 
-<form action="/profile" method="get">
-<p>Страница пользователя: {{username}}</p>
+{% block content %}
+{{super()}}
+<p><a href="{{url_for('log_out')}}">Выйти из профиля</a></p>
+<p>User info: {{current_user.get_id()}}</p>
+{% endblock %}
