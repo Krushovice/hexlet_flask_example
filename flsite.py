@@ -1,12 +1,13 @@
 import sqlite3
 import os
+
 from database.db import FDataBase
-from jinja2 import Environment, FileSystemLoader
 from flask import (Flask, flash, render_template, request,
                    redirect, url_for, get_flashed_messages,
                    make_response, session, abort, g)
 from utility.validate import validate_post, validate_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager
 
 # конфигурация
 SECRET_KEY = "3&t72u%*23a$59#1f%8hs*$%hre#@%"
@@ -15,9 +16,10 @@ DATABASE = '/tmp/database/flsite.db'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-
 app.config.update(dict(DATABASE=os.path.join(app.root_path,
                                              'database/flstite.db')))
+
+login_manager = LoginManager()
 
 
 def connect_db():
@@ -49,11 +51,13 @@ def index():
                            posts=dbase.getPostsAnnounce())
 
 
+dbase = None
+
+
 @app.before_request
 def before_request():
     db = get_db()
-    g.db = db
-    g.dbase = FDataBase(db)
+    dbase = FDataBase(db)
 
 
 @app.teardown_appcontext
@@ -83,7 +87,6 @@ def denied_access(error):
 
 @app.route("/add_post", methods=["POST", "GET"])
 def add_post():
-    dbase = g.dbase
 
     if request.method == "POST":
         name = request.form['name']
@@ -106,7 +109,6 @@ def add_post():
 
 @app.route("/post/<alias>")
 def show_post(alias):
-    dbase = g.dbase
     title, post = dbase.getPost(alias)
     if not title:
         abort(404)
@@ -131,25 +133,29 @@ def show_post(alias):
 
 @app.route('/profile/<username>')
 def profile(username):
-    dbase = g.dbase
+
     if 'userLogged' not in session or session['userLogged'] != username:
         abort(401)
+
     return render_template('users/profile.html',
                            menu=dbase.getMenu())
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def log_in():
-    dbase = g.dbase
+
     if "userLogged" in session:
         return redirect(url_for('profile',
                                 username=session['userLogged'],
                                 menu=dbase.getMenu()))
-    elif request.method == 'POST' and request.form['username'] == 'admin' and request.form['psw'] == '2566':
-        session['userLogged'] = request.form['username']
-        return redirect(url_for('profile',
-                                username=session['userLogged'],
-                                menu=dbase.getMenu()))
+    elif request.method == 'POST':
+        user = request.form.to_dict()
+        if user['name'] == 'admin' and user['psw'] == '1234':
+            session['userLogged'] = user['name']
+
+            return render_template('f"Страница пользователя admin"',
+                                   menu=dbase.getMenu())
+
     return render_template('login.html',
                            title='Авторизация',
                            menu=dbase.getMenu())
@@ -157,7 +163,6 @@ def log_in():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    dbase = g.dbase
     if request.method == 'POST':
         user = request.form.to_dict()
         if validate_user(user):

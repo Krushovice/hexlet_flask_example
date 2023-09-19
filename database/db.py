@@ -21,6 +21,22 @@ class FDataBase:
             print("Ошибка чтения из БД:", str(e))
         return []
 
+    def getUser(self, user_id):
+        try:
+            self.__cur.execute(f"""SELECT * FROM users WHERE
+                               id = {user_id} LIMIT 1""")
+
+            res = self.__cur.fetchone()
+            if not res:
+                print('Пользователь не найден')
+                return False
+            return res
+
+        except sqlite3.Error as e:
+            print('Ошибка получения данных из БД'+str(e))
+
+        return False
+
     def addUser(self, name, email, hpsw):
         try:
             self.__cur.execute(f"""SELECT COUNT() as 'count' FROM users
