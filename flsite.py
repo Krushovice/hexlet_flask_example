@@ -168,7 +168,7 @@ def log_in():
             user_log = UserLogin().create(user)
             rm = True if request.form.get('remainme') else False
             login_user(user_log, remember=rm)
-            return redirect(url_for('profile'))
+            return redirect(request.args.get('next') or url_for('profile'))
 
         flash('Неверная пара логин/пароль', 'error')
 

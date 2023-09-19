@@ -5,7 +5,7 @@
 {% for cat, msg in get_flashed_messages(True) %}
 <div class="flash {{cat}}">{{msg}}</div>
 {% endfor %}
-<form action="/login" method="post" class="form-contact">
+<form action="" method="post" class="form-contact">
 <p><label>Email:</label><input type="text" required name="email" value="">
 <p><label>Пароль:</label><input type="text" required name="psw" value="">
 <p><input type='checkbox' name="remainme" />Запомнить меня
