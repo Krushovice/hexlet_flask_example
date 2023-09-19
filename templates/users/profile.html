@@ -2,6 +2,25 @@
 
 {% block content %}
 {{super()}}
-<p><a href="{{url_for('log_out')}}">Выйти из профиля</a></p>
-<p>User info: {{current_user.get_id()}}</p>
+{% for cat, messages in get_flashed_messages(True) %}
+<div class="flash {{cat}}">{{msg}}</div>
+{% endfor %}
+<table border="0" class="profile-table">
+    <tr><td valign="top">
+        <div class="prifile-ava"><img src="{{url_for('userava')}}"></div>
+        <div class="prifile-load">
+        <form action="{{url_for('upload')}}" method="POST" enctype="multipart/form-data">
+            <p><input type="file" name="file">
+            <p><input type="submit" value="Загрузить">
+        </form>
+        </div>
+    </td>
+    <td valign="top" class="profile-panel">
+        <p><a href="{{url_for('logout')}}">Выйти из профиля</a>
+        <ul class="profile-info">
+            <li>{{current_user.getName()}}</li>
+            <li>{{current_user.getName()}}</li>
+        </ul>
+    </td></tr>
+</table>
 {% endblock %}

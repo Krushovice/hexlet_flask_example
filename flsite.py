@@ -153,7 +153,8 @@ def show_post(alias):
 def profile():
 
     return render_template('users/profile.html',
-                           menu=dbase.getMenu())
+                           menu=dbase.getMenu(),
+                           title="Профиль")
 
 
 @app.route('/login', methods=['GET', 'POST'])
