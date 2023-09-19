@@ -18,13 +18,13 @@ class FDataBase:
             if res:
                 return res
         except Exception as e:
-            print("Ошибка чтения из БД:", str(e))
+            print("Ошибка чтения из БД: "+str(e))
         return []
 
     def getUser(self, user_id):
         try:
             self.__cur.execute(f"""SELECT * FROM users WHERE
-                               id = {user_id} LIMIT 1""")
+                               id = '{user_id}' LIMIT 1""")
 
             res = self.__cur.fetchone()
             if not res:
@@ -33,14 +33,14 @@ class FDataBase:
             return res
 
         except sqlite3.Error as e:
-            print('Ошибка получения данных из БД'+str(e))
+            print('Ошибка получения данных из БД '+str(e))
 
         return False
 
     def getUserByEmail(self, email):
         try:
             self.__cur.execute(f"""SELECT * FROM users WHERE
-                               email = {email} LIMIT 1""")
+                               email = '{email}' LIMIT 1""")
 
             res = self.__cur.fetchone()
             if not res:
@@ -49,7 +49,7 @@ class FDataBase:
             return res
 
         except sqlite3.Error as e:
-            print('Ошибка получения данных из БД'+str(e))
+            print('Ошибка получения данных из БД '+str(e))
 
         return False
 
@@ -68,7 +68,7 @@ class FDataBase:
             self.__db.commit()
 
         except sqlite3.Error as e:
-            print('Ошибка добавления пользователя в БД'+str(e))
+            print('Ошибка добавления пользователя в БД '+str(e))
             return False
 
         return True

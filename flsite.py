@@ -8,7 +8,8 @@ from flask import (Flask, flash, render_template, request,
                    make_response, session, abort, g)
 from utility.validate import validate_post, validate_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, login_required
+
 
 # конфигурация
 SECRET_KEY = "3&t72u%*23a$59#1f%8hs*$%hre#@%"
@@ -20,7 +21,7 @@ app.config.from_object(__name__)
 app.config.update(dict(DATABASE=os.path.join(app.root_path,
                                              'database/flstite.db')))
 
-login_manager = LoginManager()
+login_manager = LoginManager(app)
 
 
 @login_manager.user_loader
@@ -50,21 +51,22 @@ def get_db():
     return g.link_db
 
 
-@app.route('/')
-def index():
-    dbase = g.dbase
-    return render_template('index.html',
-                           menu=dbase.getMenu(),
-                           posts=dbase.getPostsAnnounce())
-
-
 dbase = None
 
 
 @app.before_request
 def before_request():
+    global dbase
+
     db = get_db()
     dbase = FDataBase(db)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html',
+                           menu=dbase.getMenu(),
+                           posts=dbase.getPostsAnnounce())
 
 
 @app.teardown_appcontext
@@ -115,6 +117,7 @@ def add_post():
 
 
 @app.route("/post/<alias>")
+@login_required
 def show_post(alias):
     title, post = dbase.getPost(alias)
     if not title:
@@ -138,14 +141,14 @@ def show_post(alias):
 #                            menu=dbase.getMenu())
 
 
-@app.route('/profile/<username>')
-def profile(username):
+# @app.route('/profile/<username>')
+# def profile(username):
 
-    if 'userLogged' not in session or session['userLogged'] != username:
-        abort(401)
+#     if 'userLogged' not in session or session['userLogged'] != username:
+#         abort(401)
 
-    return render_template('users/profile.html',
-                           menu=dbase.getMenu())
+#     return render_template('users/profile.html',
+#                            menu=dbase.getMenu())
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -155,7 +158,7 @@ def log_in():
         user = dbase.getUserByEmail(user_data['email'])
 
         if user and check_password_hash(user['psw'], user_data['psw']):
-            user_log = user().create(user)
+            user_log = UserLogin().create(user)
             login_user(user_log)
             return redirect(url_for('index'))
 
