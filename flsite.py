@@ -2,12 +2,13 @@ import sqlite3
 import os
 
 from database.db import FDataBase
+from utility.UserLogin import UserLogin
 from flask import (Flask, flash, render_template, request,
                    redirect, url_for, get_flashed_messages,
                    make_response, session, abort, g)
 from utility.validate import validate_post, validate_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager
+from flask_login import LoginManager, login_user
 
 # конфигурация
 SECRET_KEY = "3&t72u%*23a$59#1f%8hs*$%hre#@%"
@@ -20,6 +21,12 @@ app.config.update(dict(DATABASE=os.path.join(app.root_path,
                                              'database/flstite.db')))
 
 login_manager = LoginManager()
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    print('load_user')
+    return UserLogin().fromDB(user_id, dbase)
 
 
 def connect_db():
@@ -143,18 +150,16 @@ def profile(username):
 
 @app.route('/login', methods=['GET', 'POST'])
 def log_in():
+    if request.method == 'POST':
+        user_data = request.form.to_dict()
+        user = dbase.getUserByEmail(user_data['email'])
 
-    if "userLogged" in session:
-        return redirect(url_for('profile',
-                                username=session['userLogged'],
-                                menu=dbase.getMenu()))
-    elif request.method == 'POST':
-        user = request.form.to_dict()
-        if user['name'] == 'admin' and user['psw'] == '1234':
-            session['userLogged'] = user['name']
+        if user and check_password_hash(user['psw'], user_data['psw']):
+            user_log = user().create(user)
+            login_user(user_log)
+            return redirect(url_for('index'))
 
-            return render_template('f"Страница пользователя admin"',
-                                   menu=dbase.getMenu())
+        flash('Неверная пара логин/пароль', 'error')
 
     return render_template('login.html',
                            title='Авторизация',
