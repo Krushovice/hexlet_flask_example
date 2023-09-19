@@ -63,7 +63,8 @@ class FDataBase:
                 return False
 
             tm = math.floor(time.time())
-            self.__cur.execute("""INSERT INTO users VALUES(NULL, ?, ?, ?, ?)""",
+            self.__cur.execute("""INSERT INTO users VALUES
+                                (NULL, ?, ?, ?, NULL, ?)""",
                                (name, email, hpsw, tm))
             self.__db.commit()
 

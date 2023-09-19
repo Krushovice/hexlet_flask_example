@@ -16,6 +16,7 @@ from flask_login import (LoginManager, login_user,
 SECRET_KEY = "3&t72u%*23a$59#1f%8hs*$%hre#@%"
 DEBUG = True
 DATABASE = '/tmp/database/flsite.db'
+MAX_CONTENT_LENGTH = 1024 * 1024
 
 app = Flask(__name__)
 app.config.from_object(__name__)
